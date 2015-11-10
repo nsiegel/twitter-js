@@ -1,6 +1,8 @@
 var express = require('express');
 var fs = require('fs');
 var morgan = require('morgan');
+var swig = require('swig');
+
 var app = express();
 
 // create a write stream (in append mode)
@@ -8,6 +10,11 @@ var accessLogStream = fs.createWriteStream(__dirname + '/access.log', {flags: 'a
 
 // setup the logger
 app.use(morgan('combined', {stream: accessLogStream}))
+
+app.engine('html', swig.renderFile);
+
+app.set('view engine', 'html');
+app.set('views', __dirname + '/views');
 
 app.get('/', function (req, res, next) {
   // console.log(req.route);
@@ -22,8 +29,8 @@ app.post('/', function (req, res, next) {
   next();
 });
 
-app.get("/", function(req, res) {
-	console.log('Welcome');
+app.get('/', function (req, res) {
+  console.log('Welcome');
 });
 
 var port = 3000;
